@@ -3,7 +3,7 @@
     <string name="title_activity_login">Log in to Healthy Way Admin</string>
     <!-- Strings related to login -->
     <string name="prompt_email">enter email address</string>Log in
-    <string name="prompt_password">enter password)</string>
+    <string name="prompt_password">enter password</string>
     <string name="action_sign_in">Log in</string>
     <string name="action_sign_in_short">Log in</string>
     <string name="error_invalid_email">This email address is invalid</string>
@@ -115,4 +115,7 @@
     <string name="login_spacer">-------- or ---------</string>
     <string name="create_new_account">Create New Account</string>
     <string name="press_to_create_new_account">press to create new account @string/common_google_play_services_enable_button</string>
+    <string name="confirm_password">confirm password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="cancel">Cancel</string>
 </resources>
