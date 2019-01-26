@@ -1,5 +1,6 @@
 package us.thehealthyway.healthywayadminandroid;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +27,13 @@ public class CreateNewAccount extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        // return to AdminAcitivity
+        Intent intent = new Intent();
+        intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_CREATE_NEW_ACCOUNT.getName(),
+                HealthyWayAdminActivities.ADMIN_ACTIVITY);
+        setResult(Activity.RESULT_OK, intent);
+//        finish();
     }
 
     public  static Intent makeIntent(Context context){

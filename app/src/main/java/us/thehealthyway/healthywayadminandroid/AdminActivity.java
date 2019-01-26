@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 // Application Singleton Model
 import com.google.firebase.FirebaseApp;
@@ -14,16 +16,20 @@ import java.security.DigestException;
 import java.util.Dictionary;
 import java.util.Map;
 
+import static android.view.View.INVISIBLE;
 import static us.thehealthyway.healthywayadminandroid.AppData.DEBUG;
 
 
 
 
-public class AdminActivity extends AppCompatActivity implements ReturnFromFirebase {
+public class AdminActivity extends AppCompatActivity {
     private static final String TAG = "HW.AdminActivity";
     private Context context;
     private HealthyWayAdminActivities viewControllers; // activities
     private Model model;
+    private ProgressBar progress;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,32 +37,40 @@ public class AdminActivity extends AppCompatActivity implements ReturnFromFireba
         setContentView(R.layout.activity_main);
         context = this.context;
         TextView copyright = findViewById(R.id.copyrightText);
+        progress = findViewById(R.id.progressBar);
+        progress.setVisibility(View.VISIBLE);
         FirebaseApp.initializeApp(context);
         if (DEBUG) Log.d(TAG, "onCreate");
         model = Model.getInstance();
         copyright.setText(Model.makeCopyRight());
-        model.startModel(this, this);
-        switchActivities(HealthyWayAdminActivities.LOGIN_ACTIVITY);
+        model.startModel((message)-> {failureStartingModel(message); }, ()-> {successStartingModel(); });
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-
-
+        int routeToView = 0;
+        Bundle routingInfo;
         switch (requestCode) {
             case HealthyWayAdminActivities.ADMIN_ACTIVITY:
                 if (resultCode == Activity.RESULT_OK) {
                     Log.d(TAG, "Returned from AdminActivity, somethings wrong!" );
+                    routingInfo = data.getExtras();
+                    if (routingInfo != null) {
+                        routeToView = (int) routingInfo.get(HealthyWayAdminActivities.HealthyWayViews.VIEW_ADMIN_ACTIVITY.getName());
+                    }
                 } else {
                     Log.d(TAG, "Returned from AdminActivity with cancel");
                 }
+
                 break;
             case HealthyWayAdminActivities.CHANGE_PASSWORD_ACTIVITY:
                 if (resultCode == Activity.RESULT_OK) {
                     Log.d(TAG, String.format("Returned from %s", HealthyWayAdminActivities.HealthyWayViews.VIEW_CHANGE_PASSWORD_ACTIVITY.getName()));
-                    String check = data.getStringExtra("ChangePassword");
-                    Log.d(TAG, String.format("Returned: %s",data.getStringExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_CHANGE_PASSWORD_ACTIVITY.getName())));
+                    routingInfo = data.getExtras();
+                    if (routingInfo != null) {
+                        routeToView = (int) routingInfo.get(HealthyWayAdminActivities.HealthyWayViews.VIEW_CHANGE_PASSWORD_ACTIVITY.getName());
+                    }
                 } else {
                     Log.d(TAG, "Returned from AdminActivity with cancel");
                 }
@@ -64,6 +78,10 @@ public class AdminActivity extends AppCompatActivity implements ReturnFromFireba
             case HealthyWayAdminActivities.CLIENT_VIEW:
                 if (resultCode == Activity.RESULT_OK) {
                     Log.d(TAG, String.format("Returned from %s", HealthyWayAdminActivities.HealthyWayViews.VIEW_CLIENT_VIEW.getName()));
+                    routingInfo = data.getExtras();
+                    if (routingInfo != null) {
+                        routeToView = (int) routingInfo.get(HealthyWayAdminActivities.HealthyWayViews.VIEW_CLIENT_VIEW.getName());
+                    }
                 } else {
                     Log.d(TAG, String.format("Returned from %s with Cancel", HealthyWayAdminActivities.HealthyWayViews.VIEW_CLIENT_VIEW.getName()));
                 }
@@ -71,6 +89,10 @@ public class AdminActivity extends AppCompatActivity implements ReturnFromFireba
             case HealthyWayAdminActivities.CREATE_NEW_ACCOUNT:
                 if (resultCode == Activity.RESULT_OK) {
                     Log.d(TAG, String.format("Returned from %s", HealthyWayAdminActivities.HealthyWayViews.VIEW_CREATE_NEW_ACCOUNT.getName()));
+                    routingInfo = data.getExtras();
+                    if (routingInfo != null) {
+                        routeToView = (int) routingInfo.get(HealthyWayAdminActivities.HealthyWayViews.VIEW_CREATE_NEW_ACCOUNT.getName());
+                    }
                 } else {
                     Log.d(TAG, String.format("Returned from %s with Cancel", HealthyWayAdminActivities.HealthyWayViews.VIEW_CREATE_NEW_ACCOUNT.getName()));
                 }
@@ -78,6 +100,10 @@ public class AdminActivity extends AppCompatActivity implements ReturnFromFireba
             case HealthyWayAdminActivities.FORGOTTEN_PASSWORD:
                 if (resultCode == Activity.RESULT_OK) {
                     Log.d(TAG, String.format("Returned from %s", HealthyWayAdminActivities.HealthyWayViews.VIEW_FORGOTTEN_PASSWORD.getName()));
+                    routingInfo = data.getExtras();
+                    if (routingInfo != null) {
+                        routeToView = (int) routingInfo.get(HealthyWayAdminActivities.HealthyWayViews.VIEW_FORGOTTEN_PASSWORD.getName());
+                    }
                 } else {
                     Log.d(TAG, String.format("Returned from %s with Cancel", HealthyWayAdminActivities.HealthyWayViews.VIEW_FORGOTTEN_PASSWORD.getName()));
                 }
@@ -85,6 +111,10 @@ public class AdminActivity extends AppCompatActivity implements ReturnFromFireba
             case HealthyWayAdminActivities.LOADING_PLEASE_WAIT:
                 if (resultCode == Activity.RESULT_OK) {
                     Log.d(TAG, String.format("Returned from %s", HealthyWayAdminActivities.HealthyWayViews.VIEW_LOADING_PLEASE_WAIT.getName()));
+                    routingInfo = data.getExtras();
+                    if (routingInfo != null) {
+                        routeToView = (int) routingInfo.get(HealthyWayAdminActivities.HealthyWayViews.VIEW_LOADING_PLEASE_WAIT.getName());
+                    }
                 } else {
                     Log.d(TAG, String.format("Returned from %s with Cancel", HealthyWayAdminActivities.HealthyWayViews.VIEW_LOADING_PLEASE_WAIT.getName()));
                 }
@@ -92,6 +122,10 @@ public class AdminActivity extends AppCompatActivity implements ReturnFromFireba
             case HealthyWayAdminActivities.LOGIN_ACTIVITY:
                 if (resultCode == Activity.RESULT_OK) {
                     Log.d(TAG, String.format("Returned from %s", HealthyWayAdminActivities.HealthyWayViews.VIEW_LOGIN_ACTIVITY.getName()));
+                    routingInfo = data.getExtras();
+                    if (routingInfo != null) {
+                        routeToView = (int) routingInfo.get(HealthyWayAdminActivities.HealthyWayViews.VIEW_LOGIN_ACTIVITY.getName());
+                    }
                 } else {
                     Log.d(TAG, String.format("Returned from %s with Cancel", HealthyWayAdminActivities.HealthyWayViews.VIEW_LOGIN_ACTIVITY.getName()));
                 }
@@ -99,6 +133,10 @@ public class AdminActivity extends AppCompatActivity implements ReturnFromFireba
             case HealthyWayAdminActivities.SETTINGS:
                 if (resultCode == Activity.RESULT_OK) {
                     Log.d(TAG, String.format("Returned from %s", HealthyWayAdminActivities.HealthyWayViews.VIEW_SETTINGS.getName()));
+                    routingInfo = data.getExtras();
+                    if (routingInfo != null) {
+                        routeToView = (int) routingInfo.get(HealthyWayAdminActivities.HealthyWayViews.VIEW_SETTINGS.getName());
+                    }
                 } else {
                     Log.d(TAG, String.format("Returned from %s with Cancel", HealthyWayAdminActivities.HealthyWayViews.VIEW_SETTINGS.getName()));
                 }
@@ -107,6 +145,7 @@ public class AdminActivity extends AppCompatActivity implements ReturnFromFireba
                 Log.i(TAG, "Bad requestCode from onActivityResult" + requestCode);
                 break;
         }
+        switchActivities(routeToView); // switch to next activity
     }
 
     protected void switchActivities(int segue){
@@ -117,19 +156,19 @@ public class AdminActivity extends AppCompatActivity implements ReturnFromFireba
                 startActivityForResult(intent, HealthyWayAdminActivities.CHANGE_PASSWORD_ACTIVITY);
                 break;
             case HealthyWayAdminActivities.CLIENT_VIEW:
-                intent = ChangePassword.makeIntent(AdminActivity.this);
+                intent = ClientView.makeIntent(AdminActivity.this);
                 startActivityForResult(intent, HealthyWayAdminActivities.CLIENT_VIEW);
                 break;
             case HealthyWayAdminActivities.CREATE_NEW_ACCOUNT:
-                intent = ChangePassword.makeIntent(AdminActivity.this);
+                intent = CreateNewAccount.makeIntent(AdminActivity.this);
                 startActivityForResult(intent, HealthyWayAdminActivities.CREATE_NEW_ACCOUNT);
                 break;
             case HealthyWayAdminActivities.FORGOTTEN_PASSWORD:
-                intent = ChangePassword.makeIntent(AdminActivity.this);
+                intent = ForgottenPassword.makeIntent(AdminActivity.this);
                 startActivityForResult(intent, HealthyWayAdminActivities.FORGOTTEN_PASSWORD);
                 break;
             case HealthyWayAdminActivities.LOADING_PLEASE_WAIT:
-                intent = ChangePassword.makeIntent(AdminActivity.this);
+                intent = LoadingPleaseWait.makeIntent(AdminActivity.this);
                 startActivityForResult(intent, HealthyWayAdminActivities.LOADING_PLEASE_WAIT);
                 break;
             case HealthyWayAdminActivities.LOGIN_ACTIVITY:
@@ -137,7 +176,7 @@ public class AdminActivity extends AppCompatActivity implements ReturnFromFireba
                 startActivityForResult(intent, HealthyWayAdminActivities.LOGIN_ACTIVITY);
                 break;
             case HealthyWayAdminActivities.SETTINGS:
-                intent = ChangePassword.makeIntent(AdminActivity.this);
+                intent = SettingsView.makeIntent(AdminActivity.this);
                 startActivityForResult(intent, HealthyWayAdminActivities.SETTINGS);
                 break;
             default:
@@ -151,17 +190,20 @@ public class AdminActivity extends AppCompatActivity implements ReturnFromFireba
     // my Firebase handlers
 
     public void successStartingModel(){
+        progress.setVisibility(INVISIBLE);
         if (DEBUG) {
             Log.d(TAG, "is Admin signed in?: " + model.getIsAdminSignedIn());
             Log.d(TAG, "UID: " + model.getSignedInUID());
             Log.d(TAG, "Email: " + model.getSignedInEmail());
         }
 
-        Map<String, Object> masterList = model.getNodeEmails(this, this);
+        Map<String, Object> masterList = model.getNodeEmails((message)-> {failureGetEmailsNode(message); }, ()-> {successGetEmailsNode(); });
+        switchActivities(HealthyWayAdminActivities.LOGIN_ACTIVITY);
+
     }
 
     public void failureStartingModel(String errorMessage) {
-
+        progress.setVisibility(INVISIBLE);
         if (DEBUG) {
             Log.d(TAG, errorMessage);
 

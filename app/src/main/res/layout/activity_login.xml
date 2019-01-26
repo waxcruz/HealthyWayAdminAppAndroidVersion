@@ -2,7 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayout"
+    android:id="@+id/layout_log_in"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
@@ -11,8 +11,19 @@
     <!-- Login progress -->
 
 
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/log_in_to_healthy_way_admin"
+        android:textColor="@color/hw_purple"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
-        android:id="@+id/create_new_account_button"
+        android:id="@+id/sign_out_button"
         style="?android:textAppearanceSmall"
         android:layout_width="352dp"
         android:layout_height="wrap_content"
@@ -21,13 +32,14 @@
         android:background="@color/hw_green"
         android:contentDescription="@string/press_to_create_new_account"
         android:text="@string/create_new_account"
+        android:textAllCaps="false"
         android:textColor="#ffffff"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/email_sign_in_button"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintStart_toStartOf="@+id/change_password_button"
+        app:layout_constraintTop_toBottomOf="@+id/spacer" />
 
-    <AutoCompleteTextView
-        android:id="@+id/email"
+    <EditText
+        android:id="@+id/staff_old_password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -35,33 +47,36 @@
         android:layout_marginEnd="32dp"
         android:hint="@string/prompt_email"
         android:inputType="textEmailAddress"
+        android:imeActionId="6"
+        android:imeActionLabel="@string/action_sign_in_short"
+        android:imeOptions="actionDone"
         android:maxLines="1"
         android:singleLine="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/header" />
 
 
     <EditText
-        android:id="@+id/password"
+        android:id="@+id/staff_new_password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:hint="@string/prompt_password"
         android:imeActionId="6"
         android:imeActionLabel="@string/action_sign_in_short"
-        android:imeOptions="actionUnspecified"
+        android:imeOptions="actionDone"
         android:importantForAutofill="no"
         android:inputType="textPassword"
         android:maxLines="1"
         android:singleLine="true"
-        app:layout_constraintEnd_toEndOf="@+id/email"
-        app:layout_constraintStart_toStartOf="@+id/email"
-        app:layout_constraintTop_toBottomOf="@+id/email" />
+        app:layout_constraintEnd_toEndOf="@+id/staff_old_password"
+        app:layout_constraintStart_toStartOf="@+id/staff_old_password"
+        app:layout_constraintTop_toBottomOf="@+id/staff_old_password" />
 
 
     <Button
-        android:id="@+id/email_sign_in_button"
+        android:id="@+id/change_password_button"
         style="?android:textAppearanceSmall"
         android:layout_width="352dp"
         android:layout_height="wrap_content"
@@ -69,32 +84,37 @@
         android:layout_marginTop="20dp"
         android:background="@color/hw_purple"
         android:text="@string/action_sign_in"
+        android:textAllCaps="false"
         android:textColor="#ffffff"
-        app:layout_constraintEnd_toEndOf="@+id/password"
-        app:layout_constraintStart_toStartOf="@+id/password"
-        app:layout_constraintTop_toBottomOf="@+id/password" />
+        app:layout_constraintEnd_toEndOf="@+id/staff_new_password"
+        app:layout_constraintStart_toStartOf="@+id/staff_new_password"
+        app:layout_constraintTop_toBottomOf="@+id/staff_new_password" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/spacer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:text="@string/login_spacer"
-        app:layout_constraintEnd_toEndOf="@+id/email_sign_in_button"
-        app:layout_constraintStart_toStartOf="@+id/email_sign_in_button"
-        app:layout_constraintTop_toBottomOf="@+id/email_sign_in_button" />
+        app:layout_constraintEnd_toEndOf="@+id/change_password_button"
+        app:layout_constraintStart_toStartOf="@+id/change_password_button"
+        app:layout_constraintTop_toBottomOf="@+id/change_password_button" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@color/hw_blue"
         android:text="@string/forgotten_password"
-        app:layout_constraintEnd_toEndOf="@+id/create_new_account_button"
-        app:layout_constraintStart_toStartOf="@+id/create_new_account_button"
-        app:layout_constraintTop_toBottomOf="@+id/create_new_account_button" />
+
+
+        android:textAllCaps="false"
+        android:textColor="#ffffff"
+        app:layout_constraintEnd_toEndOf="@+id/sign_out_button"
+        app:layout_constraintStart_toStartOf="@+id/sign_out_button"
+        app:layout_constraintTop_toBottomOf="@+id/sign_out_button" />
 
     <TextView
         android:id="@+id/copyrightText"
@@ -104,8 +124,25 @@
         android:layout_marginEnd="8dp"
         android:textAppearance="@android:style/TextAppearance.Small"
         android:textSize="8sp"
+        tools:ignore="SmallSp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/client_message"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/copyrightText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cancel_button" />
+
+
+
 
 </android.support.constraint.ConstraintLayout>

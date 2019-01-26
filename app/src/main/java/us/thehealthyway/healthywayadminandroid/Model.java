@@ -40,27 +40,19 @@ import static us.thehealthyway.healthywayadminandroid.AppData.DEBUG;
 
 
 
-interface ReturnFromFirebase {
-    public void successStartingModel();
-    public void failureStartingModel(String errorMessage);
-    public void successGetEmailsNode();
-    public void failureGetEmailsNode(String errorMessage);
-    public void successPasswordReset();
-    public void failurePasswordReset(String errorMessage);
-    public void successPasswordUpdate();
-    public void failurePasswordUpdate(String errorMessage);
-    public void connectionStatus(String status);
-    public void failureGetUserDataNode(String errorMessage);
-    public void successGetUserDataNode();
-    public void successCreateAdmin();
-    public void failureCreateAdmin(String errorMessage);
-    public void successCreateUser();
-    public void failureCreateUser(String errorMessage);
-    public void successCreateEmail();
-    public void failureCreateEmail(String errorMessage);
 
 
+interface SuccessHandler {
+    void successful();
+}
 
+interface FailureHandler {
+    void failure(String message);
+}
+
+
+interface StatusHandler {
+    void status(String message);
 }
 
 
@@ -148,7 +140,7 @@ public class Model {
     }
 
 
-    public void startModel(final ReturnFromFirebase failureHandler, final ReturnFromFirebase successHandler) {
+    void startModel(final FailureHandler failureHandler, final SuccessHandler successHandler) {
         healthywaysc = FirebaseDatabase.getInstance();
         ref = healthywaysc.getReference();
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -175,17 +167,15 @@ public class Model {
                                 signedInEmail = mFirebaseAuth.getCurrentUser().getEmail();
                                 healthywaysc = FirebaseDatabase.getInstance();
                                 ref = healthywaysc.getReference();
-                                successHandler.successStartingModel();
+                                successHandler.successful();
                             } else {
                                 Log.d(TAG, "Failed to sign in. Error is " + task.getException());
                                 signedInError = task.getException().toString();
                                 isAdminSignedIn = false;
-                                failureHandler.failureStartingModel("Failed to sign in. Error: " + task.getException().getLocalizedMessage());
+                                failureHandler.failure("Failed to sign in. Error: " + task.getException().getLocalizedMessage());
                             }
                         }
                     });
-
-            return;
         } else {
             signedInUID = mFirebaseUser.getUid();
             signedInEmail = mFirebaseUser.getEmail();
@@ -195,7 +185,7 @@ public class Model {
 
     }
 
-    public void stopModel() {
+    void stopModel() {
 
         ref.removeEventListener(childListener);
     }
@@ -203,17 +193,14 @@ public class Model {
 
     // Helper methods for Firebase
 
-    public void updateChildOfRecordInFirebase(String table, String recordID, String path, Object value) {
+    void updateChildOfRecordInFirebase(String table, String recordID, String path, Object value) {
         String fullFirebasePath = table + "/" + recordID + path;
-        if (fullFirebasePath != null) {
-            ref.child(fullFirebasePath).setValue(value);
-        } else {
-            Log.d(TAG, "error in updateChildOfRecordInFirebase");
-        }
-    }
+        ref.child(fullFirebasePath).setValue(value);
+     }
 
     // Authentication
-    public void loginUser( String email, String password, final ReturnFromFirebase errorHandler, final ReturnFromFirebase handler) {
+
+    void loginUser( String email, String password, final FailureHandler errorHandler, final SuccessHandler handler) {
         // Initialize Firebase Auth
         mFirebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -223,24 +210,44 @@ public class Model {
                         if (task.isSuccessful()) {
                             Log.d(TAG,"Successful login");
                             isAdminSignedIn = true;
-                            signedInUID = mFirebaseAuth.getCurrentUser().getUid();
-                            signedInEmail = mFirebaseAuth.getCurrentUser().getEmail();
-                            signedInError = null;
-                            handler.successStartingModel();
+                            try {
+                                signedInUID = mFirebaseAuth.getCurrentUser().getUid();
+                                signedInEmail = mFirebaseAuth.getCurrentUser().getEmail();
+                                signedInError = null;
+                                handler.successful();
+                            } catch (NullPointerException e) {
+                                signedInUID = null;
+                                signedInEmail = null;
+                                signedInError = null;
+                                handler.successful();
+                            }
+
                         } else {
-                            Log.d(TAG, "Failed to sign in. Error is " + task.getException());
-                            signedInError = task.getException().toString();
-                            isAdminSignedIn = false;
-                            errorHandler.failureStartingModel("Failed to sign in. Error is " + task.getException().getMessage());
+                            try {
+                                Log.d(TAG, "Failed to sign in. Error is " + task.getException());
+                                signedInError = task.getException().toString();
+                                isAdminSignedIn = false;
+                                errorHandler.failure("Failed to sign in. Error is " + task.getException().getMessage());
+                            } catch (NullPointerException e) {
+                                Log.d(TAG, "Failed to sign in. No error message returned");
+                                signedInError = "Failed to sign in. No error message returned";
+                                isAdminSignedIn = false;
+                                errorHandler.failure(signedInError);
+                            }
                         }
                     }
                 });
-
-
     }
 
-    public  void signoutHandler(final ReturnFromFirebase errorHandler) {
-        if (mFirebaseAuth.getCurrentUser().getDisplayName() != null) {
+    void signoutHandler(final FailureHandler errorHandler) {
+        try {
+            if (mFirebaseAuth.getCurrentUser().getDisplayName() != null) {
+                mFirebaseAuth.signOut();
+                signedInUID = null;
+                signedInEmail = null;
+                signedInError = null;
+            }
+        } catch (NullPointerException e) {
             mFirebaseAuth.signOut();
             signedInUID = null;
             signedInEmail = null;
@@ -251,68 +258,97 @@ public class Model {
 
 
 
-    public void signoutHandler(final  ReturnFromFirebase errorHandler, final ReturnFromFirebase handler) {
-        if (mFirebaseAuth.getCurrentUser().getUid() != null) {
+    void signoutHandler(final FailureHandler errorHandler, final SuccessHandler handler) {
+        try {
+            if (mFirebaseAuth.getCurrentUser().getUid() != null) {
+                mFirebaseAuth.signOut();
+                signedInUID = null;
+                signedInEmail = null;
+                signedInError = null;
+                handler.successful();
+            } else {
+                errorHandler.failure("No authenticated user found");
+            }
+
+        } catch (NullPointerException e) {
             mFirebaseAuth.signOut();
             signedInUID = null;
             signedInEmail = null;
             signedInError = null;
+            errorHandler.failure("No authenticated user found");
         }
     }
 
 
 
-    public void passwordReset(String email, final ReturnFromFirebase errorHandler, final ReturnFromFirebase handler) {
+    void passwordReset(String email, final FailureHandler errorHandler, final SuccessHandler handler) {
         mFirebaseAuth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         Log.d(TAG, "onComplete in passwordReset");
                         if (task.isSuccessful()) {
-                            handler.successPasswordReset();
+                            handler.successful();
                         } else {
-                            errorHandler.failurePasswordReset("failure in password reset: " + task.getException().getLocalizedMessage());
-                        }
+                            try {
+                                errorHandler.failure("failure in password reset: " + task.getException().getLocalizedMessage());
+                            } catch (NullPointerException e) {
+                                errorHandler.failure("failure in password reset: no message available");
+                            }
+                         }
                     }
                  });
     }
 
-    public void updatePassword(String newPassword, final ReturnFromFirebase errorHandler, final ReturnFromFirebase handler) {
-        mFirebaseAuth.getCurrentUser().updatePassword(newPassword)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (DEBUG) {
-                            Log.d(TAG, "updatePassword completed");
-                        }
-                        if (task.isSuccessful()) {
+    void updatePassword(String newPassword, final FailureHandler errorHandler, final SuccessHandler handler) {
+        try {
+            mFirebaseAuth.getCurrentUser().updatePassword(newPassword)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
                             if (DEBUG) {
-                                Log.d(TAG, "updatePassword successful");
+                                Log.d(TAG, "updatePassword completed");
                             }
-                            handler.successPasswordUpdate();
-                        } else {
-                            if (DEBUG) {
-                                Log.d(TAG, "updatePassowrd failed");
+                            if (task.isSuccessful()) {
+                                if (DEBUG) {
+                                    Log.d(TAG, "updatePassword successful");
+                                }
+                                handler.successful();
+                            } else {
+                                if (DEBUG) {
+                                    Log.d(TAG, "updatePassowrd failed");
+                                }
+                                try {
+                                    errorHandler.failure(task.getException().getMessage());
+                                } catch (NullPointerException e) {
+                                    errorHandler.failure("updatePassword was unsuccessful and no error message available");
+                                }
                             }
-                            handler.failurePasswordUpdate(task.getException().getMessage());
                         }
-                    }
-                });
+                    });
+        } catch (NullPointerException e) {
+            errorHandler.failure("updatePassword return error with no message");
+        }
     }
 
 
-    public void checkFirebaseConnected(final ReturnFromFirebase handler) {
+    void checkFirebaseConnected(final StatusHandler handler) {
         DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
         connectedRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                boolean connected = snapshot.getValue(Boolean.class);
-                if (connected) {
-                    System.out.println("connected");
-                } else {
-                    System.out.println("not connected");
+                try {
+                    boolean connected = snapshot.getValue(Boolean.class);
+                    if (connected) {
+                        System.out.println("connected");
+                    } else {
+                        System.out.println("not connected");
+                    }
+                    handler.status(connected ? "connected" : "not connected");
+
+                } catch (NullPointerException e) {
+                    handler.status("Connected state not returned from Firebase");
                 }
-                handler.connectionStatus(connected ? "connected" : "not connected");
             }
 
             @Override
@@ -322,7 +358,7 @@ public class Model {
         });
     }
 
-    void getNodeOfClient(final String email, final ReturnFromFirebase errorHandler, final ReturnFromFirebase handler) {
+    void getNodeOfClient(final String email, final FailureHandler errorHandler, final SuccessHandler handler) {
         // emails-->users-->userData
 
         clientNode.clear();
@@ -333,55 +369,60 @@ public class Model {
         ValueEventListener clientEvent = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                final Map<String, Object> nodeEmailsValue = (Map<String, Object>) dataSnapshot.getValue();
-                final String  clientUID =  (String) nodeEmailsValue.get("uid");
-                if (clientUID == null) {
-                    clientErrorMessage = "No Client found with that email address";
-                    errorHandler.failureGetEmailsNode(clientErrorMessage);
-                    return;
+                try {
+                    final Map<String, Object> nodeEmailsValue = (Map<String, Object>) dataSnapshot.getValue();
+                    final String  clientUID =  (String) nodeEmailsValue.get("uid");
+                    if (clientUID == null) {
+                        clientErrorMessage = "No Client found with that email address";
+                        errorHandler.failure(clientErrorMessage);
+                        return;
+                    }
+                    // use emails secondary key, UID, to verify client email is cross linked to users UID
+                    DatabaseReference userRef = ref.child(KeysForFirebase.NODE_USERS).child(clientUID);
+                    ValueEventListener userEvent = new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Map<String, Object> nodeUsersValue = (Map<String, Object>) dataSnapshot.getValue();
+                            if (nodeEmailsValue == null) {
+                                clientErrorMessage = "Encountered error searching for client UID";
+                                errorHandler.failure(clientErrorMessage);
+                                return;
+                            }
+                            String checkEmail = (String) nodeUsersValue.get("email");
+                            if (checkEmail == email) {
+                                // retrieve the client data
+                                DatabaseReference userDataRef = ref.child(KeysForFirebase.NODE_USERDATA).child(clientUID);
+                                ValueEventListener userDataEvent = new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        clientNode = (Map<String, Object>) dataSnapshot.getValue();
+                                        clientErrorMessage = "";
+                                        handler.successful();
+                                        return;
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        clientNode = null;
+                                        clientErrorMessage = "Encountered error searching for client data";
+                                        errorHandler.failure(clientErrorMessage);
+                                        return;
+                                    }
+                                };
+                                userDataRef.addListenerForSingleValueEvent(userDataEvent);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    };
+                    userRef.addListenerForSingleValueEvent(userEvent);
+
+                } catch (NullPointerException e) {
+                    errorHandler.failure("Null exception condition in getNodeOfClient. Error condition: " + e.getLocalizedMessage());
                 }
-                // use emails secondary key, UID, to verify client email is cross linked to users UID
-                DatabaseReference userRef = ref.child(KeysForFirebase.NODE_USERS).child(clientUID);
-                ValueEventListener userEvent = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Map<String, Object> nodeUsersValue = (Map<String, Object>) dataSnapshot.getValue();
-                        if (nodeEmailsValue == null) {
-                            clientErrorMessage = "Encountered error searching for client UID";
-                            errorHandler.failureGetEmailsNode(clientErrorMessage);
-                            return;
-                        }
-                        String checkEmail = (String) nodeUsersValue.get("email");
-                        if (checkEmail == email) {
-                            // retrieve the client data
-                            DatabaseReference userDataRef = ref.child(KeysForFirebase.NODE_USERDATA).child(clientUID);
-                            ValueEventListener userDataEvent = new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    clientNode = (Map<String, Object>) dataSnapshot.getValue();
-                                    clientErrorMessage = "";
-                                    handler.successGetUserDataNode();
-                                    return;
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    clientNode = null;
-                                    clientErrorMessage = "Encountered error searching for client data";
-                                    errorHandler.failureGetEmailsNode(clientErrorMessage);
-                                    return;
-                                }
-                            };
-                            userDataRef.addListenerForSingleValueEvent(userDataEvent);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                };
-                userRef.addListenerForSingleValueEvent(userEvent);
             }
 
             @Override
@@ -393,30 +434,31 @@ public class Model {
     }
 
 
-    void createAuthUserNode(String email, String password, final ReturnFromFirebase  errorHandler, final ReturnFromFirebase handler) {
+    void createAuthUserNode(String email, String password, final FailureHandler errorHandler, final SuccessHandler handler) {
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            signedInUID = task.getResult().getUser().getUid();
-                            signedInEmail = task.getResult().getUser().getEmail();
-                            if (signedInUID == null) {
-                                errorHandler.failureCreateAdmin("Account creation failure");
-                                return;
+                        try {
+                            if (task.isSuccessful()) {
+                                signedInUID = task.getResult().getUser().getUid();
+                                signedInEmail = task.getResult().getUser().getEmail();
+                                if (signedInUID == null) {
+                                    errorHandler.failure("Account creation failure");
+                                } else {
+                                    handler.successful();
+                                }
                             } else {
-                                handler.successCreateAdmin();
-                                return;
+                                errorHandler.failure(task.getException().getLocalizedMessage());
                             }
-                        } else {
-                            errorHandler.failureCreateAdmin(task.getException().getLocalizedMessage());
-                            return;
+                        } catch (NullPointerException e) {
+                            errorHandler.failure("Null exception condition in createAuthUserNode. Error condition: " + e.getLocalizedMessage());
                         }
                     }
                 });
     }
 
-    void createUserInUsersNode(String uid, String email, final ReturnFromFirebase  errorHandler, final ReturnFromFirebase handler) {
+    void createUserInUsersNode(String uid, String email, final FailureHandler errorHandler, final SuccessHandler handler) {
         // create admin user in users node
         Map<String, Object> newUser = new HashMap<String, Object>();
         newUser.put("email", email);
@@ -426,18 +468,18 @@ public class Model {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        handler.successCreateUser();
+                        handler.successful();
                     }
                 })
                 .addOnCanceledListener(new OnCanceledListener() {
                     @Override
                     public void onCanceled() {
-                        errorHandler.failureCreateUser("Account creation failed for Users Node");
+                        errorHandler.failure("Account creation failed for Users Node");
                     }
                 });
     }
 
-    void createEmailInEmailsNode(String uid, String email, final ReturnFromFirebase  errorHandler, final ReturnFromFirebase handler) {
+    void createEmailInEmailsNode(String uid, String email, final FailureHandler errorHandler, final SuccessHandler handler) {
         // create admin user in users node
         Map<String, Object> newEmail = new HashMap<String, Object>();
         newEmail.put("uid", uid);
@@ -448,13 +490,13 @@ public class Model {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        handler.successCreateEmail();
+                        handler.successful();
                     }
                 })
                 .addOnCanceledListener(new OnCanceledListener() {
                     @Override
                     public void onCanceled() {
-                        errorHandler.failureCreateEmail("Account creation failed for Email Node");
+                        errorHandler.failure("Account creation failed for Email Node");
                     }
                 });
     }
@@ -462,37 +504,42 @@ public class Model {
 
 
 
-    public String getSignedInUID() {
+    String getSignedInUID() {
         return signedInUID;
     }
 
-    public String getSignedInEmail() {
+    String getSignedInEmail() {
         return signedInEmail;
     }
 
-    public String getIsAdminSignedIn() {
+    String getIsAdminSignedIn() {
         if (isAdminSignedIn)
             return "true";
         else
             return "false";
     }
 
-    public String getSignedInError() {
+    String getSignedInError() {
         return signedInError;
     }
   // list methods
-    public Map<String, Object> getNodeEmails(final ReturnFromFirebase failureHandler, final ReturnFromFirebase successHandler) {
+
+    Map<String, Object> getNodeEmails(final FailureHandler failureHandler, final SuccessHandler successHandler) {
         DatabaseReference emailsNode = ref.child("emails");
         ValueEventListener emailsListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                emailsInFirebase = (Map<String, Object>) dataSnapshot.getValue();
-                successHandler.successGetEmailsNode();
+                try {
+                    emailsInFirebase = (Map<String, Object>) dataSnapshot.getValue();
+                    successHandler.successful();
+                } catch (NullPointerException e) {
+                    failureHandler.failure("Null exception condition in createAuthUserNode. Error condition: " + e.getLocalizedMessage());
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                failureHandler.failureGetEmailsNode("Database error reading emails node with message: " + databaseError.toString());
+                failureHandler.failure("Database error reading emails node with message: " + databaseError.toString());
             }
 
         };
@@ -504,7 +551,7 @@ public class Model {
 
 
     // create copyright string
-    public static String makeCopyRight() {
+    static String makeCopyRight() {
         Calendar calendar = Calendar.getInstance();
         return String.format("Copyright @ %s The Healthy Way", calendar.get(Calendar.YEAR));
     }

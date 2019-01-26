@@ -111,11 +111,28 @@
     <string name="title_activity_loading_please_wait">LoadingPleaseWait</string>
     <string name="copyright_2018">copyright 2018</string>
     <string name="healthy_way_icon">Healthy Way Icon</string>
-    <string name="forgotten_password">Forgotten password</string>
     <string name="login_spacer">-------- or ---------</string>
     <string name="create_new_account">Create New Account</string>
-    <string name="press_to_create_new_account">press to create new account @string/common_google_play_services_enable_button</string>
-    <string name="confirm_password">confirm password</string>
+    <string name="press_to_create_new_account">press to create new account</string>
     <string name="sign_in">Sign In</string>
     <string name="cancel">Cancel</string>
+    <string name="log_in_to_healthy_way_admin">Log in to Healthy Way Admin</string>
+    <string name="submit">Submit</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="enter_client_email_address">enter client email address</string>
+    <string name="send_mail">send mail</string>
+    <string name="journal_html">journal_html</string>
+    <string name="weight_chart">weight chart</string>
+    <string name="journal_details">Journal Details</string>
+    <string name="weight_chart_goes_here">Weight Chart Goes Here</string>
+    <string name="admin_account">Admin Account</string>
+    <string name="sign_out">Sign out</string>
+    <string name="change_password">Change Password</string>
+    <string name="confirm_password">confirm password</string>
+    <string name="old_password">old password</string>
+    <string name="new_password">new password</string>
+    <string name="submit_text">Submit</string>
+    <string name="forgotten_password">Forgotten Password</string>
+
+
 </resources>
