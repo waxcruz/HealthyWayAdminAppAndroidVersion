@@ -16,25 +16,7 @@ public class ForgottenPassword extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgotten_password);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-
-        // return to AdminAcitivity
-        Intent intent = new Intent();
-        intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_FORGOTTEN_PASSWORD.getName(),
-                HealthyWayAdminActivities.ADMIN_ACTIVITY);
-        setResult(Activity.RESULT_OK, intent);
-//        finish();
     }
 
     public  static Intent makeIntent(Context context){

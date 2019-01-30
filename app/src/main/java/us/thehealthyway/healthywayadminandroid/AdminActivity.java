@@ -61,6 +61,7 @@ public class AdminActivity extends AppCompatActivity {
                     }
                 } else {
                     Log.d(TAG, "Returned from AdminActivity with cancel");
+                    routeToView = HealthyWayAdminActivities.ADMIN_ACTIVITY;
                 }
 
                 break;
@@ -73,6 +74,7 @@ public class AdminActivity extends AppCompatActivity {
                     }
                 } else {
                     Log.d(TAG, "Returned from AdminActivity with cancel");
+                    routeToView = HealthyWayAdminActivities.SETTINGS;
                 }
                 break;
             case HealthyWayAdminActivities.CLIENT_VIEW:
@@ -84,6 +86,7 @@ public class AdminActivity extends AppCompatActivity {
                     }
                 } else {
                     Log.d(TAG, String.format("Returned from %s with Cancel", HealthyWayAdminActivities.HealthyWayViews.VIEW_CLIENT_VIEW.getName()));
+                    routeToView = HealthyWayAdminActivities.CLIENT_VIEW;
                 }
                 break;
             case HealthyWayAdminActivities.CREATE_NEW_ACCOUNT:
@@ -95,7 +98,9 @@ public class AdminActivity extends AppCompatActivity {
                     }
                 } else {
                     Log.d(TAG, String.format("Returned from %s with Cancel", HealthyWayAdminActivities.HealthyWayViews.VIEW_CREATE_NEW_ACCOUNT.getName()));
+                    routeToView = HealthyWayAdminActivities.LOGIN_ACTIVITY;
                 }
+
                 break;
             case HealthyWayAdminActivities.FORGOTTEN_PASSWORD:
                 if (resultCode == Activity.RESULT_OK) {
@@ -106,6 +111,7 @@ public class AdminActivity extends AppCompatActivity {
                     }
                 } else {
                     Log.d(TAG, String.format("Returned from %s with Cancel", HealthyWayAdminActivities.HealthyWayViews.VIEW_FORGOTTEN_PASSWORD.getName()));
+                    routeToView = HealthyWayAdminActivities.LOGIN_ACTIVITY;
                 }
                 break;
             case HealthyWayAdminActivities.LOADING_PLEASE_WAIT:
@@ -117,6 +123,7 @@ public class AdminActivity extends AppCompatActivity {
                     }
                 } else {
                     Log.d(TAG, String.format("Returned from %s with Cancel", HealthyWayAdminActivities.HealthyWayViews.VIEW_LOADING_PLEASE_WAIT.getName()));
+                    routeToView = HealthyWayAdminActivities.LOADING_PLEASE_WAIT;
                 }
                 break;
             case HealthyWayAdminActivities.LOGIN_ACTIVITY:
@@ -128,6 +135,7 @@ public class AdminActivity extends AppCompatActivity {
                     }
                 } else {
                     Log.d(TAG, String.format("Returned from %s with Cancel", HealthyWayAdminActivities.HealthyWayViews.VIEW_LOGIN_ACTIVITY.getName()));
+                    routeToView = HealthyWayAdminActivities.LOGIN_ACTIVITY;
                 }
                 break;
             case HealthyWayAdminActivities.SETTINGS:
@@ -139,10 +147,12 @@ public class AdminActivity extends AppCompatActivity {
                     }
                 } else {
                     Log.d(TAG, String.format("Returned from %s with Cancel", HealthyWayAdminActivities.HealthyWayViews.VIEW_SETTINGS.getName()));
+                    routeToView = HealthyWayAdminActivities.CLIENT_VIEW;
                 }
                 break;
             default:
                 Log.i(TAG, "Bad requestCode from onActivityResult" + requestCode);
+                routeToView = HealthyWayAdminActivities.ADMIN_ACTIVITY;
                 break;
         }
         switchActivities(routeToView); // switch to next activity
@@ -309,6 +319,8 @@ public class AdminActivity extends AppCompatActivity {
         }
     }
 
-
+    public  static Intent makeIntent(Context context){
+        return new Intent(context, SettingsView.class);
+    }
 
 }

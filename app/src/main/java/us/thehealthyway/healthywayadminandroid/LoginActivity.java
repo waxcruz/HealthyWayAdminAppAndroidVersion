@@ -55,8 +55,7 @@ public class LoginActivity extends AppCompatActivity {
                 return true;
             }
 
-                                             }
-        );
+        });
 //        staffEmail.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 //            @Override
 //            public void onFocusChange(View v, boolean hasFocus) {

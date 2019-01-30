@@ -69,9 +69,7 @@ public class SettingsView extends AppCompatActivity {
 
     }
 
-    public  static Intent makeIntent(Context context){
-        return new Intent(context, SettingsView.class);
-    }
+
 
 // Actions
     void routeToChangePassword() {
@@ -102,4 +100,8 @@ public class SettingsView extends AppCompatActivity {
         finish();
     }
 
+
+    public  static Intent makeIntent(Context context){
+        return new Intent(context, SettingsView.class);
+    }
 }
