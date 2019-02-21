@@ -78,12 +78,6 @@ public class ClientView extends AppCompatActivity {
         });
 
 
-        // return to AdminAcitivity
-        Intent intent = new Intent();
-        intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_CLIENT_VIEW.getName(),
-                HealthyWayAdminActivities.ADMIN_ACTIVITY);
-        setResult(Activity.RESULT_OK, intent);
-//        finish();
     }
 
 

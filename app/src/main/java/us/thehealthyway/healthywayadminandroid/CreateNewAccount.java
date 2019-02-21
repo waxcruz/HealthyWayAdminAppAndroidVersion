@@ -17,6 +17,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import static us.thehealthyway.healthywayadminandroid.AppData.DEBUG;
+
 public class CreateNewAccount extends AppCompatActivity {
     private static final String TAG = "HW.CreateNewAccount";
     // UI References
@@ -97,9 +99,85 @@ public class CreateNewAccount extends AppCompatActivity {
     void createLogin(){
         Log.d(TAG, "createLogin: Enter");
         // add Firebase create account logic
-
+        message.setText(""); // clear message
+        model.signoutHandler((message)-> {failureSigningOutCurrentStaffMemeber(message); });
+        createEmailKeyed = createMailAccount.getText().toString();
+        createAccountPasswordKeyed = createAccountPassword.getText().toString();
+        createAccountPasswordConfirmationKeyed = createAccountPasswordConfirmation.getText().toString();
+        if (!(createAccountPasswordKeyed.equals(createAccountPasswordConfirmationKeyed))) {
+            message.setText("Passwords mismatched. Try again");
+            return;
+        }
+        model.createAuthUserNode(createEmailKeyed, createAccountPasswordKeyed,
+                (message)-> {authErrorDisplay(message); },
+                ()-> {creationOfClientSucceeded(); } );
         Log.d(TAG, "createLogin: Exit");
     }
+
+    public void failureSigningOutCurrentStaffMemeber(String errorMessage) {
+        if (DEBUG) {
+            Log.d(TAG, "failure signing out the current logged staff member");
+        }
+        Log.e(TAG, "failureSigninOutCurrentStaffMember" + errorMessage);
+        message.setText(errorMessage);
+    }
+
+
+    public void authErrorDisplay(String errorMessage) {
+        if (DEBUG) {
+            Log.d(TAG, "authErrorDisplay: creation of staff failed with error");
+        }
+        Log.e(TAG, "authErrorDisplay: " + errorMessage);
+        message.setText(errorMessage);
+    }
+
+
+    public void databaseErrorDisplay(String errorMessage) {
+        if (DEBUG) {
+            Log.d(TAG, "databaseErrorDisplay: " + errorMessage);
+        }
+        Log.e(TAG, "databaseErrorDisplay: " + errorMessage);
+        message.setText(errorMessage);
+    }
+
+
+    public void creationOfClientSucceeded() {
+        message.setText("Client account created");
+        createClientInUsersNode();
+    }
+
+    public  void createClientInUsersNode() {
+//        modelController.createUserInUsersNode(userUID: modelController.signedinUID!, userEmail: emailEntered!, errorHandler: databaseErrorDisplay, handler: createClientInEmailsNode)
+        model.createUserInUsersNode(model.getSignedInUID(), createEmailKeyed,
+                (message)-> {databaseErrorDisplay(message); },
+                ()-> {createClientInEmailsNode(); }  );
+    }
+
+
+    public void createClientInEmailsNode() {
+        message.setText("Client identity created");
+//        modelController.createEmailInEmailsNode(userUID: modelController.signedinUID!, userEmail: emailEntered!, errorHandling: databaseErrorDisplay, handler: completedClientCreationInDatabase)
+        model.createEmailInEmailsNode(model.getSignedInUID(), createEmailKeyed,
+                (message)-> { databaseErrorDisplay(message);},
+                ()->{completedClientCreationInDatabase();});
+    }
+
+
+    public void completedClientCreationInDatabase() {
+        message.setText("Client email created");
+        Log.d(TAG, "completedClientCreationInDatabase: Enter");
+        // route to client view
+        Intent intent = new Intent();
+        intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_CREATE_NEW_ACCOUNT.getName(),
+                HealthyWayAdminActivities.CLIENT_VIEW);
+        Log.d(TAG, "completedClientCreationInDatabase: Exit");
+        finish();
+    }
+
+
+
+
+
 
 
     void cancelRequested(){

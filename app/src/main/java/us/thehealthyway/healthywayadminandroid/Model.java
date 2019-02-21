@@ -147,40 +147,41 @@ public class Model {
         signedInUID = null;
         signedInEmail = null;
         signedInError = null;
+        successHandler.successful();
 
-        // Initialize Firebase Auth
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        mFirebaseAuth.signOut();
-        mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        if (mFirebaseUser == null) {
-            // Not signed in, launch the Sign In activity
-            mFirebaseAuth.signInWithEmailAndPassword("wmyronw@yahoo.com", "waxwax")
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            Log.d(TAG, "onComplete");
-                            if (task.isSuccessful()) {
-                                Log.d(TAG,"Successful login");
-                                isAdminSignedIn = true;
-                                signedInUID = mFirebaseAuth.getCurrentUser().getUid();
-                                signedInEmail = mFirebaseAuth.getCurrentUser().getEmail();
-                                healthywaysc = FirebaseDatabase.getInstance();
-                                ref = healthywaysc.getReference();
-                                successHandler.successful();
-                            } else {
-                                Log.d(TAG, "Failed to sign in. Error is " + task.getException());
-                                signedInError = task.getException().toString();
-                                isAdminSignedIn = false;
-                                failureHandler.failure("Failed to sign in. Error: " + task.getException().getLocalizedMessage());
-                            }
-                        }
-                    });
-        } else {
-            signedInUID = mFirebaseUser.getUid();
-            signedInEmail = mFirebaseUser.getEmail();
-            isAdminSignedIn = true;
-        }
+//        // Initialize Firebase Auth
+//        mFirebaseAuth = FirebaseAuth.getInstance();
+//        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+//        mFirebaseAuth.signOut();
+//        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+//        if (mFirebaseUser == null) {
+//            // Not signed in, launch the Sign In activity
+//            mFirebaseAuth.signInWithEmailAndPassword("wmyronw@yahoo.com", "waxwax")
+//                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<AuthResult> task) {
+//                            Log.d(TAG, "onComplete");
+//                            if (task.isSuccessful()) {
+//                                Log.d(TAG,"Successful login");
+//                                isAdminSignedIn = true;
+//                                signedInUID = mFirebaseAuth.getCurrentUser().getUid();
+//                                signedInEmail = mFirebaseAuth.getCurrentUser().getEmail();
+//                                healthywaysc = FirebaseDatabase.getInstance();
+//                                ref = healthywaysc.getReference();
+//                                successHandler.successful();
+//                            } else {
+//                                Log.d(TAG, "Failed to sign in. Error is " + task.getException());
+//                                signedInError = task.getException().toString();
+//                                isAdminSignedIn = false;
+//                                failureHandler.failure("Failed to sign in. Error: " + task.getException().getLocalizedMessage());
+//                            }
+//                        }
+//                    });
+//        } else {
+//            signedInUID = mFirebaseUser.getUid();
+//            signedInEmail = mFirebaseUser.getEmail();
+//            isAdminSignedIn = true;
+//        }
 
 
     }

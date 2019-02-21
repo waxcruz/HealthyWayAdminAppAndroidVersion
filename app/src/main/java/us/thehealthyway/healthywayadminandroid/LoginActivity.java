@@ -118,14 +118,6 @@ public class LoginActivity extends AppCompatActivity {
         message = findViewById(R.id.client_message);
         message.setText(""); // clear message
 
-
-
-//        // return to AdminAcitivity
-//        Intent intent = new Intent();
-//        intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_LOGIN_ACTIVITY.getName(),
-//                HealthyWayAdminActivities.ADMIN_ACTIVITY);
-//        setResult(Activity.RESULT_OK, intent);
-////        finish();
     }
 
 

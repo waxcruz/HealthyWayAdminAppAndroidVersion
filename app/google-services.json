@@ -1,35 +1,27 @@
 {
   "project_info": {
-    "project_number": "603246166726",
-    "firebase_url": "https://healthywaysc.firebaseio.com",
-    "project_id": "healthywaysc",
-    "storage_bucket": "healthywaysc.appspot.com"
+    "project_number": "728966305977",
+    "firebase_url": "https://healthywaysc-android-testing.firebaseio.com",
+    "project_id": "healthywaysc-android-testing",
+    "storage_bucket": "healthywaysc-android-testing.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:603246166726:android:6f2663f5612433ea",
+        "mobilesdk_app_id": "1:728966305977:android:6f2663f5612433ea",
         "android_client_info": {
           "package_name": "us.thehealthyway.healthywayadminandroid"
         }
       },
       "oauth_client": [
         {
-          "client_id": "603246166726-hfmi9vhjm33q3iem41e3hn1v7mgvujnv.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "us.thehealthyway.healthywayadminandroid",
-            "certificate_hash": "e49b874ee4fa520eb1bfc752fcb6d4ea8a4e2ce7"
-          }
-        },
-        {
-          "client_id": "603246166726-1dr1ab2vp32n7gr4gpm5dqam4bo0tkjl.apps.googleusercontent.com",
+          "client_id": "728966305977-agohfaa82l1597cp4tv56jkpemtk549b.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA8vJ9UT14kxkFQtz9zpWt8ld2EQJfUxFY"
+          "current_key": "AIzaSyA-8Kdp08IDnL_t3pkTFupwVdZKYbKsRuw"
         }
       ],
       "services": {
@@ -37,21 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "603246166726-1dr1ab2vp32n7gr4gpm5dqam4bo0tkjl.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "603246166726-tci10v2na1n81is5hrf3q2a0vljlqmuv.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "us.thehealthyway.healthyway",
-                "app_store_id": "3251"
-              }
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2
