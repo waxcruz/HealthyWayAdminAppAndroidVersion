@@ -28,6 +28,7 @@ import java.util.Dictionary;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 // My Framework
@@ -88,11 +89,12 @@ public class Model {
             this.mealContentsInFirebase = mealContentsInFirebase;
         }
     private Map<String, Object> emailsInFirebase;
-        public Map<String, Object> getEmailsInFirebase() {
-            return emailsInFirebase;
-        }
+        public Map<String, Object> getEmailsInFirebase() { return emailsInFirebase;};
         public void setEmailsInFirebase(Map<String, Object> emailsInFirebase) {
             this.emailsInFirebase = emailsInFirebase;
+            Set<String> keys = emailsInFirebase.keySet();
+            String [] keyValues = keys.toArray(new String[keys.size()]);
+            setEmailsList(keyValues);
         }
     private Map<String, Object> clientNode;
         public Map<String, Object> getClientNode() {
@@ -361,8 +363,9 @@ public class Model {
 
     void getNodeOfClient(final String email, final FailureHandler errorHandler, final SuccessHandler handler) {
         // emails-->users-->userData
-
-        clientNode.clear();
+        if (clientNode != null) {
+            clientNode.clear();
+        }
         clientErrorMessage = "";
         // find the email in node emails
         String firebaseMail = Helpers.makeFirebaseEmailKey(email);
@@ -372,6 +375,11 @@ public class Model {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
                     final Map<String, Object> nodeEmailsValue = (Map<String, Object>) dataSnapshot.getValue();
+                    if (nodeEmailsValue == null) {
+                        clientErrorMessage = "No Client found with that email address";
+                        errorHandler.failure(clientErrorMessage);
+                        return;
+                    }
                     final String  clientUID =  (String) nodeEmailsValue.get("uid");
                     if (clientUID == null) {
                         clientErrorMessage = "No Client found with that email address";
@@ -390,7 +398,7 @@ public class Model {
                                 return;
                             }
                             String checkEmail = (String) nodeUsersValue.get("email");
-                            if (checkEmail == email) {
+                            if (checkEmail.equals(email)) {
                                 // retrieve the client data
                                 DatabaseReference userDataRef = ref.child(KeysForFirebase.NODE_USERDATA).child(clientUID);
                                 ValueEventListener userDataEvent = new ValueEventListener() {
@@ -531,7 +539,7 @@ public class Model {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
-                    emailsInFirebase = (Map<String, Object>) dataSnapshot.getValue();
+                    setEmailsInFirebase((Map<String, Object>) dataSnapshot.getValue());
                     successHandler.successful();
                 } catch (NullPointerException e) {
                     failureHandler.failure("Null exception condition in createAuthUserNode. Error condition: " + e.getLocalizedMessage());
@@ -549,7 +557,11 @@ public class Model {
         return null;
     }
 
-
+    public String [] getFullListOfClientEmails() {
+        Set<String> keys = emailsInFirebase.keySet();
+        String [] keyValues = keys.toArray(new String[keys.size()]);
+        return keyValues;
+    }
 
     // create copyright string
     static String makeCopyRight() {

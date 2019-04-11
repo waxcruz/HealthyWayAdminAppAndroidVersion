@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import static us.thehealthyway.healthywayadminandroid.AppData.DEBUG;
+
 /**
  * A login screen that offers login via staffEmail/staffPassword.
  */
@@ -150,13 +152,17 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void loginFailure(String message){
-        Log.d(TAG, "loginFailure: "+ message);
+        if (DEBUG) {
+            Log.d(TAG, "loginFailure: "+ message);
+        }
         this.message.setText(message.toString());
     }
 
 
     private void loginSuccess(){
-        Log.d(TAG, "loginSuccess: " + staffEmailKeyed);
+        if (DEBUG) {
+            Log.d(TAG, "loginSuccess: " + staffEmailKeyed);
+        }
         // route to ClientView because staff logged into app
         Intent intent = new Intent();
         intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_LOGIN_ACTIVITY.getName(),
@@ -167,7 +173,9 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void routeToCreateNewAccount(){
-        Log.d(TAG, "routeToCreateNewAccount: button clicked");
+        if (DEBUG) {
+            Log.d(TAG, "routeToCreateNewAccount: button clicked");
+        }
         // route to CreateNewAccount because staff wants to create new staff account
         Intent intent = new Intent();
         intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_LOGIN_ACTIVITY.getName(),
@@ -177,7 +185,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void routeToForgottenPassword(){
-        Log.d(TAG, "routeToForgottenPassword: button clicked");
+        if (DEBUG) {
+            Log.d(TAG, "routeToForgottenPassword: button clicked");
+        }
         // route to CreateNewAccount because staff wants to create new staff account
         Intent intent = new Intent();
         intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_LOGIN_ACTIVITY.getName(),

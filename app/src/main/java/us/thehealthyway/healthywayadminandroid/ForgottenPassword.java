@@ -16,6 +16,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import static us.thehealthyway.healthywayadminandroid.AppData.DEBUG;
+
 public class ForgottenPassword extends AppCompatActivity {
     private static final String TAG = "HW.ForgottenPassword";
     // UI References
@@ -80,18 +82,52 @@ public class ForgottenPassword extends AppCompatActivity {
     }
 
     void resetPassword() {
-        Log.d(TAG, "resetPassword: Enter");
+        if (DEBUG) {
+            Log.d(TAG, "resetPassword: Enter");
+        }
         // add reset password code for Firebase
-        Log.d(TAG, "resetPassword: Exit");
+        client_message.setText("");
+        model.signoutHandler((message)->{errorMessage(message);});
+        model.passwordReset(resetPasswordStaffEmailKeyed,
+                (message)->{errorMessage(message);},
+                ()->{sendEmailInstructions();}
+                );
+        if (DEBUG) {
+            Log.d(TAG, "resetPassword: Exit");
+        }
     }
 
-    void cancelRequested() {
-        Log.d(TAG, "cancelRequested: Enter");
+    public void sendEmailInstructions() {
+        if (DEBUG) {
+            Log.d(TAG, "sendEmailInstructions: Enter");
+        }
         // return to login
         Intent intent = new Intent();
         intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_FORGOTTEN_PASSWORD.getName(),
                 HealthyWayAdminActivities.LOGIN_ACTIVITY);
-        Log.d(TAG, "cancelRequested: Exit");
+        setResult(Activity.RESULT_OK, intent);
+        if (DEBUG) {
+            Log.d(TAG, "sendEmailInstructions: Exit");
+        }
+        finish();
+    }
+
+    public void errorMessage(String message) {
+        client_message.setText(message);
+    }
+
+    void cancelRequested() {
+        if (DEBUG) {
+            Log.d(TAG, "cancelRequested: Enter");
+        }
+        // return to login
+        Intent intent = new Intent();
+        intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_FORGOTTEN_PASSWORD.getName(),
+                HealthyWayAdminActivities.LOGIN_ACTIVITY);
+        setResult(Activity.RESULT_OK, intent);
+        if (DEBUG) {
+            Log.d(TAG, "cancelRequested: Exit");
+        }
         finish();
     }
 

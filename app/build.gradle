@@ -45,4 +45,5 @@ dependencies {
     implementation files('libs/HealthyWayAndroidFramework/CommonCode.jar')
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
 
+
 }

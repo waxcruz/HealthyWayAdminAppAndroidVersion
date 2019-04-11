@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Debug;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+
+import static us.thehealthyway.healthywayadminandroid.AppData.DEBUG;
 
 public class ChangePassword extends AppCompatActivity {
     private static final String TAG = "HW.ChangePassword";
@@ -36,6 +39,9 @@ public class ChangePassword extends AppCompatActivity {
     private String staffOldPasswordlKeyed;
     private String staffNewPasswordKeyed;
     private String staffConfirmPasswordKeyed;
+
+    // temp data
+    private String staffEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,25 +86,74 @@ public class ChangePassword extends AppCompatActivity {
     }
 
     void changePassword(){
-        Log.d(TAG, "changePassword: Enter");
+        if (DEBUG) {
+            Log.d(TAG, "changePassword: Enter");
+        }
         // add change password logic
+        client_message.setText("");
+        if (!(staffNewPasswordKeyed.equals(staffConfirmPasswordKeyed))) {
+            client_message.setText("Passwords mismatched. Try again");
+            return;
+        }
+        if (model.getSignedInUID() == null) {
+            client_message.setText("You must be signed in");
+            return;
+        } else {
+            staffEmail = model.getSignedInEmail();
+            model.signoutHandler((message)->{authErrorMessage(message);},
+                    ()->{loginStaff();});
+        }
         // route to client view
         Intent intent = new Intent();
         intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_CHANGE_PASSWORD_ACTIVITY.getName(),
                 HealthyWayAdminActivities.CLIENT_VIEW);
         setResult(Activity.RESULT_OK, intent);
-        Log.d(TAG, "changePassword: Exit");
+        if (DEBUG) {
+            Log.d(TAG, "changePassword: Exit");
+        }
         finish();
     }
-    
-    void cancelRequested() {
-        Log.d(TAG, "cancelRequested: Enter");
+
+    public void authErrorMessage(String message) {
+        client_message.setText(message);
+    }
+
+    public void loginStaff() {
+        // verify staff's identity
+        model.loginUser(staffEmail, staffOldPasswordlKeyed,
+                (message)->{authErrorMessage(message);},
+                ()->{updateStaffPassword();});
+    }
+
+    public void updateStaffPassword() {
+        // make password change
+        model.updatePassword(staffNewPasswordKeyed,
+                (message)->{authErrorMessage(message);},
+                ()->{changedPasswordSuccessfully();});
+    }
+
+    public void changedPasswordSuccessfully() {
+        client_message.setText("Password change succeeded");
         // return to caller
         Intent intent = new Intent();
         intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_CHANGE_PASSWORD_ACTIVITY.getName(),
                 HealthyWayAdminActivities.SETTINGS);
         setResult(Activity.RESULT_OK, intent);
-        Log.d(TAG, "cancelRequested: Exit");
+        finish();
+    }
+
+    void cancelRequested() {
+        if (DEBUG) {
+            Log.d(TAG, "cancelRequested: Enter");
+        }
+        // return to caller
+        Intent intent = new Intent();
+        intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_CHANGE_PASSWORD_ACTIVITY.getName(),
+                HealthyWayAdminActivities.SETTINGS);
+        setResult(Activity.RESULT_OK, intent);
+        if (DEBUG) {
+            Log.d(TAG, "cancelRequested: Exit");
+        }
         finish();
     }
 

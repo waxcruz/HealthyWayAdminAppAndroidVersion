@@ -97,7 +97,9 @@ public class CreateNewAccount extends AppCompatActivity {
     }
 
     void createLogin(){
-        Log.d(TAG, "createLogin: Enter");
+        if (DEBUG) {
+            Log.d(TAG, "createLogin: Enter");
+        }
         // add Firebase create account logic
         message.setText(""); // clear message
         model.signoutHandler((message)-> {failureSigningOutCurrentStaffMemeber(message); });
@@ -111,7 +113,9 @@ public class CreateNewAccount extends AppCompatActivity {
         model.createAuthUserNode(createEmailKeyed, createAccountPasswordKeyed,
                 (message)-> {authErrorDisplay(message); },
                 ()-> {creationOfClientSucceeded(); } );
-        Log.d(TAG, "createLogin: Exit");
+        if (DEBUG) {
+            Log.d(TAG, "createLogin: Exit");
+        }
     }
 
     public void failureSigningOutCurrentStaffMemeber(String errorMessage) {
@@ -147,7 +151,6 @@ public class CreateNewAccount extends AppCompatActivity {
     }
 
     public  void createClientInUsersNode() {
-//        modelController.createUserInUsersNode(userUID: modelController.signedinUID!, userEmail: emailEntered!, errorHandler: databaseErrorDisplay, handler: createClientInEmailsNode)
         model.createUserInUsersNode(model.getSignedInUID(), createEmailKeyed,
                 (message)-> {databaseErrorDisplay(message); },
                 ()-> {createClientInEmailsNode(); }  );
@@ -156,7 +159,6 @@ public class CreateNewAccount extends AppCompatActivity {
 
     public void createClientInEmailsNode() {
         message.setText("Client identity created");
-//        modelController.createEmailInEmailsNode(userUID: modelController.signedinUID!, userEmail: emailEntered!, errorHandling: databaseErrorDisplay, handler: completedClientCreationInDatabase)
         model.createEmailInEmailsNode(model.getSignedInUID(), createEmailKeyed,
                 (message)-> { databaseErrorDisplay(message);},
                 ()->{completedClientCreationInDatabase();});
@@ -165,28 +167,32 @@ public class CreateNewAccount extends AppCompatActivity {
 
     public void completedClientCreationInDatabase() {
         message.setText("Client email created");
-        Log.d(TAG, "completedClientCreationInDatabase: Enter");
+        if (DEBUG) {
+            Log.d(TAG, "completedClientCreationInDatabase: Enter");
+        }
         // route to client view
         Intent intent = new Intent();
         intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_CREATE_NEW_ACCOUNT.getName(),
                 HealthyWayAdminActivities.CLIENT_VIEW);
-        Log.d(TAG, "completedClientCreationInDatabase: Exit");
+        if (DEBUG) {
+            Log.d(TAG, "completedClientCreationInDatabase: Exit");
+        }
+        setResult(Activity.RESULT_OK, intent);
         finish();
     }
 
-
-
-
-
-
-
     void cancelRequested(){
-        Log.d(TAG, "cancelRequested: Enter");
+        if (DEBUG) {
+            Log.d(TAG, "cancelRequested: Enter");
+        }
         // return to login
         Intent intent = new Intent();
         intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_CREATE_NEW_ACCOUNT.getName(),
                 HealthyWayAdminActivities.LOGIN_ACTIVITY);
-        Log.d(TAG, "cancelRequested: Exit");
+        if (DEBUG) {
+            Log.d(TAG, "cancelRequested: Exit");
+        }
+        setResult(Activity.RESULT_OK, intent);
         finish();
     }
     void hideMyKeyboard(TextView v) {

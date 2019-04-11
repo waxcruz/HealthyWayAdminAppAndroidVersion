@@ -19,6 +19,8 @@ import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 
+import static us.thehealthyway.healthywayadminandroid.AppData.DEBUG;
+
 public class SettingsView extends AppCompatActivity {
     private static final String TAG = "HW.SettingsView";
 
@@ -35,7 +37,9 @@ public class SettingsView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate: debugging");
+        if (DEBUG) {
+            Log.d(TAG, "onCreate: debugging");
+        }
         setContentView(R.layout.activity_settings_view);
         // find Model Controller
         model = Model.getInstance();
@@ -47,14 +51,18 @@ public class SettingsView extends AppCompatActivity {
         changePasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: change button pressed");
+                if (DEBUG) {
+                    Log.d(TAG, "onClick: change button pressed");
+                }
                 routeToChangePassword();
             }
         });
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: signoff button pressed");
+                if (DEBUG) {
+                    Log.d(TAG, "onClick: signoff button pressed");
+                }
                 signoffStaff();
             }
         });
@@ -62,7 +70,9 @@ public class SettingsView extends AppCompatActivity {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: cancel button pressed");
+                if (DEBUG) {
+                    Log.d(TAG, "onClick: cancel button pressed");
+                }
                 cancelAction();
             }
         });
@@ -82,7 +92,9 @@ public class SettingsView extends AppCompatActivity {
 
     void signoffStaff(){
         // add Firebase signoff code
-        Log.d(TAG, "signoffStaff: add signoff code here");
+        if (DEBUG) {
+            Log.d(TAG, "signoffStaff: add signoff code here");
+        }
         // route to login view
         Intent intent = new Intent();
         intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_SETTINGS.getName(),
@@ -92,7 +104,9 @@ public class SettingsView extends AppCompatActivity {
     }
 
     void cancelAction(){
-        Log.d(TAG, "cancelAction: returning to ClientView");
+        if (DEBUG) {
+            Log.d(TAG, "cancelAction: returning to ClientView");
+        }
         Intent intent = new Intent();
         intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_SETTINGS.getName(),
                 HealthyWayAdminActivities.CLIENT_VIEW);
