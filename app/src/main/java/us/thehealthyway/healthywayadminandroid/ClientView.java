@@ -229,6 +229,8 @@ private class EditTextListener implements TextWatcher {
         if (DEBUG) {
             Log.d(TAG, "sendEmailToStaff: send client journal to staff");
         }
+        // check permissions for attachments
+
         // build journal
         String htmlBodyMail = formatJournal(model.getClientNode(), true);
         // save html to local file
@@ -635,7 +637,7 @@ private class EditTextListener implements TextWatcher {
         if (exerciseCheckCount > 0) {
             template = template.replaceAll("HW_DATE_EXERCISE_CHECKS ", "&#x2714; ");
         } else {
-            template = template.replaceAll("HW_DATE_EXERCISE_CHECKS ", " ︎");
+            template = template.replaceAll("HW_DATE_EXERCISE_CHECKS ", " ");
         }
 
         return template;

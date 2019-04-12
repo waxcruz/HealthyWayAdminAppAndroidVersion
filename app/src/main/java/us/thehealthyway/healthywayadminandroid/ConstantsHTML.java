@@ -93,7 +93,7 @@ public class ConstantsHTML {
             ;
     public static String JOURNAL_DATE_STATS =
             "<font size=\"3\">     Water: HW_DATE_WATER_CHECKS Supplements: HW_DATE_SUPPLEMENTS_CHECKS Exercise: HW_DATE_EXERCISE_CHECKS </font>\n" +
-            "<p>"
+            "<p>\n"
             ;
     public static String JOURNAL_DATE_COMMENTS = "<font size=\"3\">HW_COMMENTS</font>";
     public static String JOURNAL_DATE_TRAILER = 
