@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
         staffPassword = (EditText) findViewById(R.id.staff_new_password);
-        staffPassword.setText("waxwax");
+        staffPassword.setText("");
         staffPassword.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {

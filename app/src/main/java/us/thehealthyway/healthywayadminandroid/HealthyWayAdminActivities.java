@@ -14,9 +14,10 @@ public class HealthyWayAdminActivities {
         VIEW_FORGOTTEN_PASSWORD("ForgottenPassword"),
         VIEW_LOADING_PLEASE_WAIT("LoadingPleaseWait"),
         VIEW_LOGIN_ACTIVITY("LoginActivity"),
-        VIEW_SETTINGS("Settings");
+        VIEW_SETTINGS("Settings"),
+        PERMISSIONS_READ_STORAGE("PermissionsStorageRead"),
+        PERMISSIONS_WRITE_STORAGE("PermissionsStorageWrite");
 
-        ;
 
         private String stringName;
 
@@ -36,6 +37,8 @@ public class HealthyWayAdminActivities {
     public static final int LOADING_PLEASE_WAIT = 5;
     public static final int LOGIN_ACTIVITY = 6;
     public static final int SETTINGS = 7;
+    public static final int PERMISSION_READ_STORAGE = 8;
+    public static final int PERMISSION_WRITE_STORAGE = 9;
 
 
 
