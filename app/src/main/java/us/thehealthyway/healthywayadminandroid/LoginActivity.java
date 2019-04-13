@@ -93,6 +93,15 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 staffEmailKeyed = staffEmail.getText().toString();
                 staffPasswordKeyed = staffPassword.getText().toString();
+                if (staffEmailKeyed.equals("")) {
+                    message.setText("No email address entered.");
+                    return;
+                }
+                if (staffPasswordKeyed.equals("")) {
+                    message.setText("No password entered");
+                    return;
+                }
+
                 attemptLogin();
             }
         });
