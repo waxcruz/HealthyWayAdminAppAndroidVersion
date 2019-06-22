@@ -151,41 +151,6 @@ public class Model {
         signedInError = null;
         successHandler.successful();
 
-//        // Initialize Firebase Auth
-//        mFirebaseAuth = FirebaseAuth.getInstance();
-//        mFirebaseUser = mFirebaseAuth.getCurrentUser();
-//        mFirebaseAuth.signOut();
-//        mFirebaseUser = mFirebaseAuth.getCurrentUser();
-//        if (mFirebaseUser == null) {
-//            // Not signed in, launch the Sign In activity
-//            mFirebaseAuth.signInWithEmailAndPassword("wmyronw@yahoo.com", "waxwax")
-//                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<AuthResult> task) {
-//                            Log.d(TAG, "onComplete");
-//                            if (task.isSuccessful()) {
-//                                Log.d(TAG,"Successful login");
-//                                isAdminSignedIn = true;
-//                                signedInUID = mFirebaseAuth.getCurrentUser().getUid();
-//                                signedInEmail = mFirebaseAuth.getCurrentUser().getEmail();
-//                                healthywaysc = FirebaseDatabase.getInstance();
-//                                ref = healthywaysc.getReference();
-//                                successHandler.successful();
-//                            } else {
-//                                Log.d(TAG, "Failed to sign in. Error is " + task.getException());
-//                                signedInError = task.getException().toString();
-//                                isAdminSignedIn = false;
-//                                failureHandler.failure("Failed to sign in. Error: " + task.getException().getLocalizedMessage());
-//                            }
-//                        }
-//                    });
-//        } else {
-//            signedInUID = mFirebaseUser.getUid();
-//            signedInEmail = mFirebaseUser.getEmail();
-//            isAdminSignedIn = true;
-//        }
-
-
     }
 
     void stopModel() {
@@ -209,9 +174,9 @@ public class Model {
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "onComplete");
+                        if (DEBUG) Log.d(TAG, "onComplete");
                         if (task.isSuccessful()) {
-                            Log.d(TAG,"Successful login");
+                            if (DEBUG) Log.d(TAG,"Successful login");
                             isAdminSignedIn = true;
                             try {
                                 signedInUID = mFirebaseAuth.getCurrentUser().getUid();
@@ -227,12 +192,12 @@ public class Model {
 
                         } else {
                             try {
-                                Log.d(TAG, "Failed to sign in. Error is " + task.getException());
+                                if (DEBUG) Log.d(TAG, "Failed to sign in. Error is " + task.getException());
                                 signedInError = task.getException().toString();
                                 isAdminSignedIn = false;
                                 errorHandler.failure("Failed to sign in. Error is " + task.getException().getMessage());
                             } catch (NullPointerException e) {
-                                Log.d(TAG, "Failed to sign in. No error message returned");
+                                if (DEBUG) Log.d(TAG, "Failed to sign in. No error message returned");
                                 signedInError = "Failed to sign in. No error message returned";
                                 isAdminSignedIn = false;
                                 errorHandler.failure(signedInError);
@@ -289,7 +254,7 @@ public class Model {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Log.d(TAG, "onComplete in passwordReset");
+                        if (DEBUG) Log.d(TAG, "onComplete in passwordReset");
                         if (task.isSuccessful()) {
                             handler.successful();
                         } else {

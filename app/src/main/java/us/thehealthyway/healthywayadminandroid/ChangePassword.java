@@ -46,7 +46,7 @@ public class ChangePassword extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate: ChangePassword Activity debugging");
+        if (DEBUG) Log.d(TAG, "onCreate: ChangePassword Activity debugging");
         setContentView(R.layout.activity_change_password);
         // find Model Controller
         model = Model.getInstance();

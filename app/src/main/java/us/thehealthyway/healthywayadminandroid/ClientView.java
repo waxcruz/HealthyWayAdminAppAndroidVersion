@@ -99,7 +99,7 @@ public class ClientView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate: debugging");
+        if (DEBUG) Log.d(TAG, "onCreate: debugging");
         maxTotals = new double[5];
         totals = new double[5];
 
@@ -118,16 +118,16 @@ public class ClientView extends AppCompatActivity {
         listOfClients = (ListView) findViewById(R.id.list_of_clients);
         // wire button listeners
         clientEmail.setOnEditorActionListener(new AutoCompleteTextView.OnEditorActionListener() {
-              @Override
-              public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                  clientEmailKeyed = textView.getText().toString();
-                  displayClient();
-                  listOfClients.setVisibility(View.INVISIBLE);
-                  InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                  imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
-                  return true;
-              }
-          }
+                                                  @Override
+                                                  public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                                                      clientEmailKeyed = textView.getText().toString();
+                                                      displayClient();
+                                                      listOfClients.setVisibility(View.INVISIBLE);
+                                                      InputMethodManager imm = (InputMethodManager) textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                                      imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
+                                                      return true;
+                                                  }
+                                              }
         );
 
         clientEmail.addTextChangedListener(new EditTextListener());
@@ -158,8 +158,12 @@ public class ClientView extends AppCompatActivity {
 
         // load emails for searching
         Map<String, Object> masterList = model.getNodeEmails(
-                (message)-> {failureGetEmailsNode(message); },
-                ()-> {successGetEmailsNode(); });
+                (message) -> {
+                    failureGetEmailsNode(message);
+                },
+                () -> {
+                    successGetEmailsNode();
+                });
         // wire listview
         filteredEmailsList = new ArrayList<String>();
         clientAdapter = new ArrayAdapter<String>(this, R.layout.activity_client_search_list, filteredEmailsList);
@@ -175,18 +179,18 @@ public class ClientView extends AppCompatActivity {
         });
 
 
-}
+    }
 
 
-    private void failureGetEmailsNode(String message){
+    private void failureGetEmailsNode(String message) {
         if (DEBUG) {
-            Log.d(TAG, "loginFailure: "+ message);
+            Log.d(TAG, "loginFailure: " + message);
         }
         this.message.setText("Failed to load list of client emails. " + message.toString());
     }
 
 
-    private void successGetEmailsNode(){
+    private void successGetEmailsNode() {
         if (DEBUG) {
             Log.d(TAG, "loadEmailsSuccess: loaded");
         }
@@ -194,7 +198,7 @@ public class ClientView extends AppCompatActivity {
         ArrayList<String> emailsList = new ArrayList<String>();
         // a firebase email contains commas instead of periods. Restore format for display
         for (String email : firebaseEmails) {
-            email = (email.replace(',','.')).toLowerCase();
+            email = (email.replace(',', '.')).toLowerCase();
             emailsList.add(email);
         }
         // sort the full list
@@ -205,7 +209,7 @@ public class ClientView extends AppCompatActivity {
     }
 
 
-private class EditTextListener implements TextWatcher {
+    private class EditTextListener implements TextWatcher {
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -236,28 +240,14 @@ private class EditTextListener implements TextWatcher {
         if (!clearPermissionsForStorageAccess()) {
             message.setText("Try again after you permit access to storage");
             return;
-        };
+        }
+        ;
         // build journal
         String htmlBodyMail = formatJournal(model.getClientNode(), true);
         // save html to local file
         String journalFileName = "journalAttachment2.html";
         String pathToJournalAttachment = saveHtmlFile(journalFileName, htmlBodyMail);
         // try Journal attachment
-//
-//        File journalFile = getPublicDocumentsDirNewFile(journalFileName);
-//        pathToJournalAttachment = journalFile.getPath();
-//        try {
-//            FileInputStream checkAttachment = new FileInputStream(journalFile);
-//            int c;
-//            String attachment = "";
-//            while ((c = checkAttachment.read()) != -1) {
-//                attachment += Character.toString((char) c);
-//            }
-//            Log.i(TAG, "Attachment size:" + attachment.length());
-//            checkAttachment.close();
-//        } catch (Exception e) {
-//            Log.i(TAG, "sendEmailToStaff: ", e);
-// e       }
 
         // address email
         String[] TO = {model.getSignedInEmail()};
@@ -278,7 +268,7 @@ private class EditTextListener implements TextWatcher {
         try {
             startActivity(Intent.createChooser(emailIntent, "Send mail..."));
             finish();
-            Log.i(TAG, "sendEmailToStaff: Done.");
+            if (DEBUG) Log.d(TAG, "sendEmailToStaff: Done.");
             message.setText("Journal sent attached to email");
         } catch (android.content.ActivityNotFoundException ex) {
             message.setText("There is no email client installed.");
@@ -288,18 +278,17 @@ private class EditTextListener implements TextWatcher {
     private String saveHtmlFile(String journalFileName, String journal) {
         String returnThePath = "";
         if (isExternalStorageWritable()) {
-            Log.i(TAG, "saveHtmlFile: Storage ready");
-        } else
-            if (isExternalStorageReadable()) {
-                Log.i(TAG, "saveHtmlFile: Read only storage");
-            } else {
-                message.setText("No external storage available");
-            }
+            if (DEBUG) Log.d(TAG, "saveHtmlFile: Storage ready");
+        } else if (isExternalStorageReadable()) {
+            if (DEBUG) Log.d(TAG, "saveHtmlFile: Read only storage");
+        } else {
+            message.setText("No external storage available");
+        }
 
         String root = Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOCUMENTS).toString();
+                Environment.DIRECTORY_DOCUMENTS).toString();
         try {
-            FileOutputStream outputStream = new FileOutputStream(root+"/"+journalFileName);
+            FileOutputStream outputStream = new FileOutputStream(root + "/" + journalFileName);
             outputStream.write(journal.getBytes());
             outputStream.close();
             returnThePath = root + "/" + journalFileName;
@@ -308,7 +297,6 @@ private class EditTextListener implements TextWatcher {
         }
         return returnThePath;
     }
-
 
 
     /* Checks if external storage is available for read and write */
@@ -331,7 +319,6 @@ private class EditTextListener implements TextWatcher {
     }
 
 
-
     void routeToSettings() {
         Intent intent = new Intent();
         intent.putExtra(HealthyWayAdminActivities.HealthyWayViews.VIEW_CLIENT_VIEW.getName(),
@@ -351,13 +338,14 @@ private class EditTextListener implements TextWatcher {
             }
         }
         if (filteredEmailsList.size() == 0) {
-            Log.i(TAG, "displayClients: zero entries");
+            if (DEBUG) Log.d(TAG, "displayClients: zero entries");
             return;
         }
         listOfClients.setVisibility(View.VISIBLE);
         clientAdapter.notifyDataSetChanged();
-        Log.i(TAG, "displayClients: filteredEmailsList size: " + filteredEmailsList.size());
-        InputMethodManager imm = (InputMethodManager)clientEmail.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (DEBUG)
+            Log.d(TAG, "displayClients: filteredEmailsList size: " + filteredEmailsList.size());
+        InputMethodManager imm = (InputMethodManager) clientEmail.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(clientEmail.getWindowToken(), 0);
 
         if (DEBUG) {
@@ -375,9 +363,12 @@ private class EditTextListener implements TextWatcher {
         message.setText(" ");
         // get the client node
         model.getNodeOfClient(clientEmailKeyed,
-                (errorMessage)->{failureGetClientNode(errorMessage);},
-                ()->{successGetClientNode();});
-
+                (errorMessage) -> {
+                    failureGetClientNode(errorMessage);
+                },
+                () -> {
+                    successGetClientNode();
+                });
 
 
         if (DEBUG) {
@@ -385,9 +376,9 @@ private class EditTextListener implements TextWatcher {
         }
     }
 
-    private void failureGetClientNode(String message){
+    private void failureGetClientNode(String message) {
         if (DEBUG) {
-            Log.d(TAG, "loginFailure: "+ message);
+            Log.d(TAG, "loginFailure: " + message);
         }
         mailboxButton.setVisibility(View.INVISIBLE);
         weightChart.setVisibility(View.INVISIBLE);
@@ -395,7 +386,7 @@ private class EditTextListener implements TextWatcher {
     }
 
 
-    private void successGetClientNode(){
+    private void successGetClientNode() {
         if (DEBUG) {
             Log.d(TAG, "loadEmailsSuccess: loaded");
         }
@@ -418,8 +409,8 @@ private class EditTextListener implements TextWatcher {
         if (node.size() == 0) {
             return " ";
         }
-        Map<String, Object> nodeSettings = (Map<String, Object>)node.get(KeysForFirebase.NODE_SETTINGS);
-        Map<String, Object>  nodeJournal = (Map<String, Object>) node.get(KeysForFirebase.NODE_JOURNAL);
+        Map<String, Object> nodeSettings = (Map<String, Object>) node.get(KeysForFirebase.NODE_SETTINGS);
+        Map<String, Object> nodeJournal = (Map<String, Object>) node.get(KeysForFirebase.NODE_JOURNAL);
         Map<String, Object> nodeMealContents = (Map<String, Object>) node.get(KeysForFirebase.NODE_MEAL_CONTENTS);
         String journalMockup = buildJournalHeader(isEmail);
         if (nodeJournal == null) {
@@ -434,20 +425,19 @@ private class EditTextListener implements TextWatcher {
         Collections.sort(sortedKeyDates);
         Collections.reverse(sortedKeyDates);
         // display journaly details for date
-        if (nodeMealContents != null)
-        {
+        if (nodeMealContents != null) {
             for (String mealdate : sortedKeyDates) {
                 totals = new double[5]; // clear totals for new date
                 journalMockup += buildJournalDailyTotalsRow(mealdate, nodeSettings);
-                Map<String, Object> meal = (Map<String, Object>)nodeMealContents.get(mealdate);
+                Map<String, Object> meal = (Map<String, Object>) nodeMealContents.get(mealdate);
                 if (meal != null) {
                     // extract details of consumption
-                    Map<String, Object> breakfast = (Map<String, Object>)meal.get(KeysForFirebase.BREAKFAST_MEAL_KEY);
-                    Map<String, Object> morningSnack = (Map<String, Object>)meal.get(KeysForFirebase.MORNING_SNACK_MEAL_KEY);
-                    Map<String, Object> lunch = (Map<String, Object>)meal.get(KeysForFirebase.LUNCH_MEAL_KEY);
-                    Map<String, Object> afternoonSnack = (Map<String, Object>)meal.get(KeysForFirebase.AFTERNOON_SNACK_MEAL_KEY);
-                    Map<String, Object> dinner = (Map<String, Object>)meal.get(KeysForFirebase.DINNER_MEAL_KEY);
-                    Map<String, Object> eveningSnack = (Map<String, Object>)meal.get(KeysForFirebase.EVENING_SNACK_MEAL_KEY);
+                    Map<String, Object> breakfast = (Map<String, Object>) meal.get(KeysForFirebase.BREAKFAST_MEAL_KEY);
+                    Map<String, Object> morningSnack = (Map<String, Object>) meal.get(KeysForFirebase.MORNING_SNACK_MEAL_KEY);
+                    Map<String, Object> lunch = (Map<String, Object>) meal.get(KeysForFirebase.LUNCH_MEAL_KEY);
+                    Map<String, Object> afternoonSnack = (Map<String, Object>) meal.get(KeysForFirebase.AFTERNOON_SNACK_MEAL_KEY);
+                    Map<String, Object> dinner = (Map<String, Object>) meal.get(KeysForFirebase.DINNER_MEAL_KEY);
+                    Map<String, Object> eveningSnack = (Map<String, Object>) meal.get(KeysForFirebase.EVENING_SNACK_MEAL_KEY);
                     if (breakfast != null) {
                         journalMockup += buildJournalMealRow(KeysForFirebase.BREAKFAST_MEAL_KEY, breakfast);
                     }
@@ -497,7 +487,7 @@ private class EditTextListener implements TextWatcher {
             return " ";
         }
 
-        template = template.replaceAll("HW_RECORDED_DATE",displayDate);
+        template = template.replaceAll("HW_RECORDED_DATE", displayDate);
         if (node.containsKey(KeysForFirebase.LIMIT_PROTEIN_LOW)) {
             amount = ((Number) node.get(KeysForFirebase.LIMIT_PROTEIN_LOW)).doubleValue();
         } else {
@@ -532,8 +522,8 @@ private class EditTextListener implements TextWatcher {
         return template;
     }
 
-    protected  String buildJournalMealRow(String name,
-                                          Map<String, Object> meal) {
+    protected String buildJournalMealRow(String name,
+                                         Map<String, Object> meal) {
         // Java doesn't have a mechanism similar to Swift's inout so I use a global for totals
         totals = new double[5];
         String template = ConstantsHTML.JOURNAL_MEAL_ROW;
@@ -592,7 +582,7 @@ private class EditTextListener implements TextWatcher {
     }
 
     protected String buildJournalDateTotals() {
-        String  template = ConstantsHTML.JOURNAL_DATE_TOTALS;
+        String template = ConstantsHTML.JOURNAL_DATE_TOTALS;
         // post consumption on date
         template = template.replaceAll("HW_DATE_TOTAL_PROTEIN", Double.toString(totals[0]));
         template = template.replaceAll("HW_DATE_TOTAL_STARCH", Double.toString(totals[1]));
@@ -624,21 +614,21 @@ private class EditTextListener implements TextWatcher {
         int supplementCheckCount = 0;
         int exerciseCheckCount = 0;
         String template = ConstantsHTML.JOURNAL_DATE_STATS;
-        Map<String, Object> journalDetails =  (Map<String, Object>) node.get(date);
+        Map<String, Object> journalDetails = (Map<String, Object>) node.get(date);
         if (journalDetails != null) {
             if (journalDetails.get(KeysForFirebase.GLASSES_OF_WATER) != null) {
-                waterCheckCount = ((Number)(journalDetails.get(KeysForFirebase.GLASSES_OF_WATER))).intValue();
+                waterCheckCount = ((Number) (journalDetails.get(KeysForFirebase.GLASSES_OF_WATER))).intValue();
             }
             if (journalDetails.get(KeysForFirebase.SUPPLEMENTS) != null) {
-                supplementCheckCount = ((Number)(journalDetails.get(KeysForFirebase.SUPPLEMENTS))).intValue();
+                supplementCheckCount = ((Number) (journalDetails.get(KeysForFirebase.SUPPLEMENTS))).intValue();
             }
-            if (journalDetails.get(KeysForFirebase.EXERCISED) != null){
-                exerciseCheckCount = ((Number)(journalDetails.get(KeysForFirebase.EXERCISED))).intValue();
+            if (journalDetails.get(KeysForFirebase.EXERCISED) != null) {
+                exerciseCheckCount = ((Number) (journalDetails.get(KeysForFirebase.EXERCISED))).intValue();
             }
         }
-        String checkMarks = TextUtils.join("",Collections.nCopies(waterCheckCount,"&#x2714; "));
+        String checkMarks = TextUtils.join("", Collections.nCopies(waterCheckCount, "&#x2714; "));
         template = template.replaceAll("HW_DATE_WATER_CHECKS", checkMarks);
-        checkMarks = TextUtils.join("",Collections.nCopies(supplementCheckCount,"&#x2714; "));
+        checkMarks = TextUtils.join("", Collections.nCopies(supplementCheckCount, "&#x2714; "));
         template = template.replaceAll("HW_DATE_SUPPLEMENTS_CHECKS ", checkMarks);
         if (exerciseCheckCount > 0) {
             template = template.replaceAll("HW_DATE_EXERCISE_CHECKS ", "&#x2714; ");
@@ -649,11 +639,11 @@ private class EditTextListener implements TextWatcher {
         return template;
     }
 
-    protected  String buildJournalDateComments(String date,
-                                               Map<String, Object> node) {
+    protected String buildJournalDateComments(String date,
+                                              Map<String, Object> node) {
         String template = ConstantsHTML.JOURNAL_DATE_COMMENTS;
         if (node.containsKey(date)) {
-            Map<String, Object> journalDetails = (Map<String, Object>)node.get(date);
+            Map<String, Object> journalDetails = (Map<String, Object>) node.get(date);
             if (journalDetails.containsKey(KeysForFirebase.NOTES)) {
                 template = template.replaceAll("HW_COMMENTS", (String) journalDetails.get(KeysForFirebase.NOTES));
             } else {
@@ -663,16 +653,14 @@ private class EditTextListener implements TextWatcher {
             template = template.replaceAll("HW_COMMENTS", " ");
 
         }
-        Map<String, Object> journalDetails = (Map<String, Object>)node.get(date);
+        Map<String, Object> journalDetails = (Map<String, Object>) node.get(date);
         return template;
     }
 
 
-    protected  String buildJournalDateTrailer() {
+    protected String buildJournalDateTrailer() {
         return ConstantsHTML.JOURNAL_DATE_TRAILER;
     }
-
-
 
 
     // Charting
@@ -683,10 +671,10 @@ private class EditTextListener implements TextWatcher {
         }
         mailboxButton.setVisibility(View.VISIBLE);
         message.setText("");
-        if (node == null){
+        if (node == null) {
             return;
         }
-        if (node.containsKey(KeysForFirebase.NODE_JOURNAL)){
+        if (node.containsKey(KeysForFirebase.NODE_JOURNAL)) {
             nodeJournal = (Map<String, Object>) node.get(KeysForFirebase.NODE_JOURNAL);
         } else {
             return;
@@ -746,8 +734,10 @@ private class EditTextListener implements TextWatcher {
             chartLabels.add(mmddDisplay(weightDate));
             xValue += 1.0;
         }
-        Log.i(TAG, "lineChartUdate: chartSeries: " + chartSeries.size());
-        Log.i(TAG, "lineChartUdate: chartLabels: " + chartLabels.size());
+        if (DEBUG) {
+            Log.d(TAG,"lineChartUdate: chartSeries: "+chartSeries.size());
+            Log.d(TAG,"lineChartUdate: chartLabels: "+chartLabels.size());
+        }
         LineDataSet weightDataSet = new LineDataSet(chartSeries, "Weight Loss/Gain");
         weightDataSet.setColor(ContextCompat.getColor(this, R.color.hw_green));
         weightDataSet.setValueTextColor(ContextCompat.getColor(this, R.color.hw_green));
@@ -756,13 +746,15 @@ private class EditTextListener implements TextWatcher {
             @Override
 
             public String getFormattedValue(float value, AxisBase axis) {
-                Log.i(TAG, "getFormattedValue: value = " + value);
-                Log.i(TAG, "getFormattedValue: axis = " + axis.toString());
-                if (((int) value ) >= chartLabels.size() || ((int) value) < 0) {
-                    Log.i(TAG, "getFormattedValue: out of bounds index" + ((int) value));
+                if (DEBUG) {
+                    Log.d(TAG, "getFormattedValue: value = " + value);
+                    Log.d(TAG, "getFormattedValue: axis = " + axis.toString());
+                }
+                 if (((int) value ) >= chartLabels.size() || ((int) value) < 0) {
+                     if (DEBUG) Log.d(TAG, "getFormattedValue: out of bounds index" + ((int) value));
                     return "bad label at " + value;
                 } else {
-                    Log.i(TAG, "getFormattedValue: getFormattedValue =" + chartLabels.get((int) value));
+                     if (DEBUG) Log.d(TAG, "getFormattedValue: getFormattedValue =" + chartLabels.get((int) value));
                     return  chartLabels.get((int) value);                }
 
             }
@@ -817,7 +809,7 @@ private class EditTextListener implements TextWatcher {
             }
             return false;
         } else {
-            Log.i(TAG, "clearPermissionsForStorageAccess: permission granted");
+            if (DEBUG) Log.d(TAG, "clearPermissionsForStorageAccess: permission granted");
             return true;
         }
 
@@ -832,7 +824,7 @@ private class EditTextListener implements TextWatcher {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i(TAG, "onRequestPermissionsResult: permission granted for read");
+                    if (DEBUG) Log.d(TAG, "onRequestPermissionsResult: permission granted for read");
                 } else {
                     message.setText("You must permit Storage or journal email will fail");
                 }
@@ -841,7 +833,7 @@ private class EditTextListener implements TextWatcher {
             case HealthyWayAdminActivities.PERMISSION_WRITE_STORAGE: {
                 if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i(TAG, "onRequestPermissionsResult: permission granted for write");
+                    if (DEBUG) Log.d(TAG, "onRequestPermissionsResult: permission granted for write");
                 } else {
                     message.setText("You must permit Storage or journal email will fail");
                 }
